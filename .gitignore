@@ -1,0 +1,9 @@
+.DS_Store
+*.sublime-workspace
+*.sublime-project
+*.egg-info/
+env/
+.python-version
+*.pyc
+__pycache__/
+*.log
