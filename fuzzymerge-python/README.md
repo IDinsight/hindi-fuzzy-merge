@@ -12,7 +12,6 @@ Python code for merging two datasets containing columns with Hindi tranlisterate
   * [2-cleaning_functions.json](#cleaning_functions)
   * [3-merge_functions.json](#merge_functions)
   * [4-merge_steps.json](#merge_steps)
-<br>
 
 <a name="overview"></a>
 ## Overview
@@ -38,7 +37,6 @@ This code is meant to serve as an example of the algorithm. When working on a si
      |-- Results 	    # Optional: Subfolder for storing output file containg the match results
 	    |-- *.csv 
 ```
-<br>
 
 <a name="usage"></a>
 ## Usage
