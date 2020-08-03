@@ -7,3 +7,4 @@ env/
 *.pyc
 __pycache__/
 *.log
+Data

@@ -7,7 +7,7 @@
 ######################################################################################################
 
 exec(open('1-helper_functions.py').read())
-
+import pandas as pd
 
 def get_dataset(inputs_config, left_or_right):
 

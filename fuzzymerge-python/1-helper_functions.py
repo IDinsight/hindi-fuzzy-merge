@@ -7,11 +7,7 @@
 ######################################################################################################
 
 import re
-import copy
 import json
-import numpy as np
-import pandas as pd
-
 
 def read_matching_config():
 
