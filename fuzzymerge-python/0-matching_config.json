@@ -1,0 +1,37 @@
+{
+  "inputs":{
+    "left_dataset":{
+        "path":"Data/Alirajpur Enrollment.xlsx",
+        "csv_or_excel": "excel",
+        "dataset_unique_id": "Uniqueid",
+        "columns_mapping":{
+          "cluster_code":"PanchayatCode",
+          "village_code":"Villagecode",
+          "childname":"ChildName",
+          "fathername":"Father Name",
+          "gender":"Gender",
+          "age":"Age",
+          "social_category":"SocialCategory"
+        }
+      },
+    "right_dataset":{
+        "path": "Data/Alirajpur D2D data.csv",
+        "csv_or_excel": "csv",
+        "dataset_unique_id":"UniqueId",
+        "columns_mapping":{
+          "cluster_code":"PanchayatCode",
+          "village_code":"Villagecode",
+          "childname":"ChildName",
+          "fathername":"FathersName",
+          "gender":"Gender",
+          "age":"Age",
+          "social_category":"SocialCategory"
+        }
+      }
+    },
+  "outputs":{
+    "path":"Data/Results",
+    "left_columns_to_keep": ["dataset_unique_id", "cluster_code", "village_code", "childname", "fathername"],
+    "right_columns_to_keep": ["dataset_unique_id", "cluster_code", "village_code", "childname", "fathername"]
+    }
+}
