@@ -29,13 +29,13 @@ This code is meant to serve as an example of the algorithm. When working on a si
 ```bash
 .
 |-- 0-matching_config.json  # Config file for specifying the input file paths, column name mapping etc.
-|-- 1-helper_functions.py # All functions used in the matching steps like string manipulation functions, transliteration fixes etc. 
+|-- 1-helper_functions.py   # All functions used in the matching steps like string manipulation functions, transliteration fixes etc. 
 |-- 2-cleaning_functions.py # All data reading and cleaning functions
-|-- 3-merge_functions.py # All functions used for merge operations 
-|-- 4-merge_steps.py 	  # Main Python file with the merge steps which calls functions from other files 
-|-- Data 	    # Optional: Directory to store the input and output files
+|-- 3-merge_functions.py    # All functions used for merge operations 
+|-- 4-merge_steps.py 	    # Main Python file with the merge steps which calls functions from other files 
+|-- Data 	        # Optional: Directory to store the input and output files
 	  |-- *.csv/*.excel # Optional: Input files for left and right datasets
-	  |-- Results 	  # Optional: Subfolder for storing output file containg the match results
+	  |-- Results 	    # Optional: Subfolder for storing output file containg the match results
 	  		|-- *.csv 
 ```
 <br>
