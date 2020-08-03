@@ -53,7 +53,7 @@ Command to run the code is: `python3 4-merge_steps.py`
     * <i>`inputs.(left/right)_dataset.csv_or_excel`</i>: File extension type of the input file. The allowed values are csv or excel. 
     * <i>`inputs.(left/right)_dataset.dataset_unique_id`</i>: Column name for the unique identifier for each row in the left/right dataset. The code throws an error in case this column is not unique in the input data. In absence of a column which uniquely identifies each row, users can add a dummy column with row number to the file. 
     * <i>`inputs.(left/right)_dataset.columns_mapping`</i>: All columns which are going to be used in the matching steps except the unique id column can be specified here. The keys are the actual (expected) column names used in subsequent steps in the code and the values are the corresponding column headers in the file. This mapping is used to rename the columns to the expected column names for the code to work with files with different column headers, if needed. 
-    * <i>`outputs.path`: Path to the folder where the outputs file 'matches.csv' should be stored.
+    * <i>`outputs.path`</i>: Path to the folder where the outputs file 'matches.csv' should be stored.
     * <i>`outputs.(left/right)_columns_to_keep`</i>: Columns from the left/right dataset you want to include in the output file. Here the 'keys' specified in columns_mapping configuration which are the expected column names can be used to refer to the columns.
 
 
