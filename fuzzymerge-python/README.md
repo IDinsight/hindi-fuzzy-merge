@@ -33,9 +33,9 @@ This code is meant to serve as an example of the algorithm. When working on a si
 |-- 2-cleaning_functions.py # All data reading and cleaning functions
 |-- 3-merge_functions.py    # All functions used for merge operations 
 |-- 4-merge_steps.py 	    # Main Python file with the merge steps which calls functions from other files 
-|-- Data 	          # Optional: Directory to store the input and output files
-	|-- *.csv/*.excel # Optional: Input files for left and right datasets
-	|-- Results 	    # Optional: Subfolder for storing output file containg the match results
+|-- Data 	           # Optional: Directory to store the input and output files
+ |-- *.csv/*.excel # Optional: Input files for left and right datasets
+ |-- Results 	    # Optional: Subfolder for storing output file containg the match results
 	  |-- *.csv 
 ```
 <br>
