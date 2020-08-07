@@ -6,7 +6,7 @@ Python code for merging two datasets containing columns with Hindi tranlisterate
 * [Overview](#overview)
 * [Directory Structure](#directory)
 * [Usage](#usage)
-* [Files](#files)
+* [Files](#fileslist)
   * [0-matching_config.json](#matching_config)
   * [1-helper_functions.json](#helper_functions)
   * [2-cleaning_functions.json](#cleaning_functions)
@@ -42,7 +42,7 @@ This code is meant to serve only as an example of the algorithm. It was written 
 Command to run the code is: `python3 4-merge_steps.py`
 <br>
 
-<a name="files"></a>
+<a name="fileslist"></a>
 ## Files
 1. <a name="matching_config"></a><b>0-matching_config.json</b><br>
     Json file for specifying input and output file configurations. File level configurations are kept here so that the same code can work with data in different input files as long as the variables to be used for matching are the same. Here is a description for each key in the configuration file:
