@@ -1,8 +1,7 @@
 ########################################################################################################
 
-# DESCRIPTION: Function for using Fuzzy wuzzy package for matching two datasets
-# AUTHOR: Jeenu Thomas (IDinsight Inc.)
-# LAST UPDATED ON: 31-07-2020   
+# DESCRIPTION: Functions used in 4-merge_steps.py for pandas column merge and Fuzzy wuzzy package
+# AUTHOR: IDinsight Inc.
 
 #########################################################################################################
 
@@ -19,16 +18,8 @@ def merge_data(left_data_df,
     
     
     """
-    :param left_data_df: the dataset on the left
-    :param right_data_df: the dataset on the right
-    :param left_columns: array of the left data columns to be merged on 
-    :param right_columns: array of the right data columns to be merged on 
-    :param merge_level: number denoting level of the merge
-    :param merge_desc: description of merge
-    :param age_limits: age bracket for match
-    :param columns_to_keep: columns to keep in results dataset
-    :return: merge results
-    Function to merge a left dataset and a right dataset based on some selected columns and an age upper/lower bound
+    Function to merge a left dataset and a right dataset based on some specified columns and an 
+    age upper/lower bound
     
     """   
     
@@ -73,6 +64,13 @@ def fuzzywuzzy_match(left_dataset,
           					 right_dataset, 
           					 scorer, 
           					 cutoff):
+
+    """
+      Function to find matches in the specified right dataset column for a left dataset column 
+      within the specified cutoff threshhold. The additional column specified looks for matches 
+      within subset of rows where the additional column exactly matches.
+  
+    """
 
     match = process.extractOne(left_dataset[left_dataset_match_column], 
                              choices=right_dataset.loc[right_dataset[additional_right_dataset_columns] == left_dataset[additional_left_dataset_columns], 

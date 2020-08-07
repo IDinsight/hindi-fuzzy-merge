@@ -1,21 +1,27 @@
 #####################################################################################################
 
-# DESCRIPTION: Matching cleaning functions
-# AUTHOR: Jeenu Thomas (IDinsight Inc.)
-# LAST UPDATED ON: 31-07-2020   
+# DESCRIPTION: Function used in 4-merge_steps.py for loading dataset and cleaning
+# AUTHOR: IDinsight Inc.
 
 ######################################################################################################
 
 exec(open('1-helper_functions.py').read())
 import pandas as pd
 
-def get_dataset(inputs_config, left_or_right):
+def get_dataset(inputs_config, 
+                left_or_right):
+
+    """
+        Function to fetch the left/right dataset based on the defined inputs, perform a few
+        consistency checks and rename columns
+
+    """
 
     if (left_or_right not in ['left', 'right']):
         print("Unexpected argument '" + left_or_right + "' passed in get_dataset function.")
         return
 
-    # Configure the left dataset
+    # Dataset Configurations
     dataset_config = inputs_config[left_or_right + "_dataset"]
     dataset_file_type = dataset_config["csv_or_excel"]
     dataset_file_path = dataset_config["path"]
@@ -50,7 +56,7 @@ def get_dataset(inputs_config, left_or_right):
     # Rename columns on the dataset
     data_df.rename(columns=rename_dict, inplace=True)
 
-    # Check if left dataset unique id column is unique
+    # Check if dataset unique id column is indeed unique
     v_dup_unique_id_df = data_df.groupby('dataset_unique_id').filter(lambda x: len(x) > 1)
     if (len(v_dup_unique_id_df) > 0):
         print("The unique id column for the " + left_or_right + " dataset should be unique for each row.")
@@ -73,8 +79,9 @@ def get_dataset(inputs_config, left_or_right):
 
 def process_left_dataset(left_dataset, 
                          prefix):
+
     """
-        Function to standardize columns in form 6 data
+        Function to standardize columns in the left dataset, create new columns for the merge etc.
     """
 
     # Split the names with a slash -  may not be needed for the new incoming data
@@ -175,7 +182,7 @@ def process_left_dataset(left_dataset,
 def process_right_dataset(right_dataset,
                           prefix):
     """
-        Function to standardize columns in d2d data
+        Function to standardize columns in the right dataset, create new columns for the merge etc.
     """
 
     # Create transliteration fixed alterations for child name in d2d data

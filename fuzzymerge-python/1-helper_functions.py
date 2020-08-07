@@ -1,21 +1,20 @@
 #####################################################################################################
 
-# DESCRIPTION: Matching helper functions
-# AUTHOR: Jeenu Thomas (IDinsight Inc.)
-# LAST UPDATED ON: 31-07-2020   
+# DESCRIPTION: Matching helper functions used in 2-cleaning_functions.py
+# AUTHOR: IDinsight Inc.
 
 ######################################################################################################
 
 import re
 import json
 
-def read_matching_config():
+def read_matching_config(p_path):
 
     """
         Function to read the matching config from json file
 
     """
-    with open("./0-matching_config.json") as json_file:
+    with open(p_path) as json_file:
         v_config_json = json.load(json_file)
 
     return v_config_json

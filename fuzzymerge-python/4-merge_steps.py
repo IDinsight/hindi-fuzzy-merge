@@ -1,18 +1,19 @@
 #######################################################################################################
 
-# DESCRIPTION: Python file with customizable python code to match two datasets containing transliterated Hindi texts,
-# 			   age limits etc.
-# AUTHOR: Jeenu Thomas (IDinsight Inc.)
-# LAST UPDATED ON: 31-07-2020   
+# DESCRIPTION: Python file with customizable python code to match two datasets containing transliterated 
+#              Hindi texts/names, age limits etc.
 
-# CODE TO RUN: python3 4-merge_steps.py
+# AUTHOR: IDinsight Inc.
+
+# COMMAND TO RUN: python3 4-merge_steps.py
+
+# Python Packages Required: pandas, json, fuzzywuzzy, python-Levenshtein.
 
 # GENERAL NOTES: 
-# 		1. Prerequisites are: A Python environment with the required python packages installed
+# 		1. Prerequisites are: A Python environment with all the required python packages installed
 # 		2. Update the matching_config.json for file paths and variable names
 # 		3. Update the code to use the variables names and steps based on your dataset
 
-# Python Packages Needed: pandas, json, fuzzywuzzy, python-Levenshtein.
 ########################################################################################################
 
 exec(open('2-cleaning_functions.py').read())
@@ -20,13 +21,13 @@ exec(open('3-merge_functions.py').read())
 
 def run():
 
-    # Initialize dataframes to store all the matched datasets
-    results_final_df = pd.DataFrame()
+    # Initialize dataframes
     left_data_df = pd.DataFrame()
     right_data_df = pd.DataFrame()
+    results_final_df = pd.DataFrame()
 
-    # If manual files are provided, read in config and then the files
-    matching_config = read_matching_config()
+    # Read in config
+    matching_config = read_matching_config("./0-matching_config.json")
     inputs_config = matching_config["inputs"]
     outputs_config = matching_config["outputs"]
 
@@ -34,23 +35,23 @@ def run():
     left_data_df = get_dataset(inputs_config, 'left')
     right_data_df = get_dataset(inputs_config, 'right')
 
-    print(left_data_df.shape)
-    print(right_data_df.shape)
 
     ################################################### Merges ###########################################################
 
     left_columns_to_keep = outputs_config["left_columns_to_keep"]
     right_columns_to_keep = outputs_config["right_columns_to_keep"]
-
     columns_to_keep = ['left_' + str(col) for col in left_columns_to_keep] + ['right_' + str(col) for col in right_columns_to_keep]
 
+    # Add unique identifier from left dataset to beginning of the list, if not already included
     if 'left_dataset_unique_id' not in columns_to_keep:
-        # Add to beginning of the list
         columns_to_keep = ['left_dataset_unique_id'] + columns_to_keep
 
     columns_to_keep.append('merge_level')
     columns_to_keep.append('merge_desc')
 
+    # Creating regions array for a for loop
+    # Note: This is specific to this dataset where we wanted to use the same 
+    #       combination of variables for merges at both region levels
     regions = ['Village', 'Cluster']
     regions_columns = ['village_code', 'cluster_code']
 
@@ -60,6 +61,7 @@ def run():
     # Loop through regions
     for regions_index in range(0, len(regions)):
 
+        # Note: Change this or use multiple json arrays based on variables, reliability order etc. 
         matching_steps_json =[
         {
         # 1 - Exact match on all variables at village level
@@ -336,7 +338,7 @@ def run():
         }
         ]
 
-        # Loop through matching config jsom and perform merge
+        # Loop through matching config json and perform merge
         for match_step in matching_steps_json:
 
             match_step_results_df = merge_data(left_data_df,

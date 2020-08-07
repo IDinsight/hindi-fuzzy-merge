@@ -1,7 +1,7 @@
 {
   "inputs":{
     "left_dataset":{
-        "path":"Data/Alirajpur Enrollment.xlsx",
+        "path":"../data/Alirajpur Enrollment.xlsx",
         "csv_or_excel": "excel",
         "dataset_unique_id": "Uniqueid",
         "columns_mapping":{
@@ -15,7 +15,7 @@
         }
       },
     "right_dataset":{
-        "path": "Data/Alirajpur D2D data.csv",
+        "path": "../data/Alirajpur D2D data.csv",
         "csv_or_excel": "csv",
         "dataset_unique_id":"UniqueId",
         "columns_mapping":{
@@ -30,7 +30,7 @@
       }
     },
   "outputs":{
-    "path":"Data/Results",
+    "path":"../data/results",
     "left_columns_to_keep": ["dataset_unique_id", "cluster_code", "village_code", "childname", "fathername"],
     "right_columns_to_keep": ["dataset_unique_id", "cluster_code", "village_code", "childname", "fathername"]
     }
