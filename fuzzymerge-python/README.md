@@ -30,10 +30,10 @@ This code is meant to serve only as an example of the algorithm. It was written 
 |     |-- 1-helper_functions.py   # All functions used in the matching and cleaning steps like string manipulation functions, transliteration fixes etc. 
 |     |-- 2-cleaning_functions.py # All data reading and cleaning functions
 |     |-- 3-merge_functions.py    # All functions used for performing merge operations 
-|     |-- 4-merge_steps.py 	    # Main Python script with the merge steps which calls functions from other files 
-|-- data 	            # Optional: Directory to store the input and output files
-     |-- *.csv/*.excel      # Optional: Input files for left and right datasets
-     |-- results 	    # Optional: Subfolder for storing output file containg the match results
+|     |-- 4-merge_steps.py 	  # Main Python script with the merge steps which calls functions from other files 
+|-- data 	              # Optional: Directory to store the input and output files
+     |-- *.csv/*.excel        # Optional: Input files for left and right datasets
+     |-- results 	      # Optional: Subfolder for storing output file containg the match results
 	    |-- *.csv 
 ```
 
