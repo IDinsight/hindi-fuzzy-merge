@@ -24,8 +24,8 @@ This code is motivated by the fact that Hindi names written in Devanagari script
 |-- fuzzymerge-stata
      |-- *.do
      |-- raw data
-     |	|-- census data
-     |	|-- voter roll data 
+     |	  |-- census data
+     |	  |-- voter roll data 
      |-- clean data
 	 	|-- intermediate merge data
 	 	|-- final matched data 	 
