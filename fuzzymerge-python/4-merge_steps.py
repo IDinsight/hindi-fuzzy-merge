@@ -3,8 +3,6 @@
 # DESCRIPTION: Python file with customizable python code to match two datasets containing transliterated 
 #              Hindi texts/names, age limits etc.
 
-# AUTHOR: IDinsight Inc.
-
 # COMMAND TO RUN: python3 4-merge_steps.py
 
 # Python Packages Required: pandas, json, fuzzywuzzy, python-Levenshtein.
