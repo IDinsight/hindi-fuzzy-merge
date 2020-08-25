@@ -49,8 +49,8 @@ def run():
     columns_to_keep.append('merge_desc')
 
     # Creating regions array for a for loop
-    # Note for users: This is specific to this dataset where we wanted to
-    #        use the same combination of variables for merges at both region levels
+    # This is specific to this matching problem where we wanted to
+    # use the same combination of variables for merges at both region levels
     regions = ['Village', 'Cluster']
     regions_columns = ['village_code', 'cluster_code']
 
@@ -60,7 +60,7 @@ def run():
     # Loop through regions
     for regions_index in range(0, len(regions)):
 
-        # Note for users: Change this or use multiple json arrays based on variables, reliability order etc.
+        # Use multiple json arrays based on variables to be merged on, order of merges etc.
         matching_steps_json = [
             {
                 # 1 - Exact match on all variables at village level
