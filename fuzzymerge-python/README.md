@@ -16,9 +16,10 @@ Python code for merging two datasets containing columns with Hindi tranlisterate
 <a name="overview"></a>
 ## Overview
 
-The underlying algorithm used in this code was first implemented in Stata and then adapted to Python. It relies on using different combinations of variables in a step-by-step manner, starting with the most reliable criteria for identifying true matches (which is, exact matches on all variables), and progressively using less and less reliable criteria like matching on all expected variations of the names (POOJA - PUJA, SUMEET - SUMIT etc.). The reliability of the steps is decided based on running the algorithm on a small sample of test data. 
+The underlying algorithm used in this code was first implemented in Stata and then adapted to Python. 
 
-This code is meant to serve only as an example of the algorithm. It was written for matching two datasets containing the variables: cluster code, village code, child name, father name, gender, age and social category. Child name and father name are Indian names transliterated into English. When working on a similar matching datasets problem, you can take this code and customize it to work with your dataset by changing variables names, matching steps, order of the steps etc. based on the data you are working with.
+The code was written for matching two datasets: household survey and data collected from school registers; containing the variables: cluster code, village code, child name, father name, gender, age and social category. Child name and father name are Indian names transliterated into English. 
+This is meant to serve only as an example of the algorithm. When working on a similar matching datasets problem, you can take this code and customize it to work with your dataset by changing variables names, matching steps, order of the steps etc. based on the data you are working with.
 <br>
 
 <a name="directory"></a>
@@ -68,7 +69,7 @@ Command to run the code is: `python3 4-merge_steps.py`
 
 4. <a name="merge_functions"></a><b>3-merge_functions.py</b><br>
     Functions used for different merging operations are provided here. The functions are:
-    * <i>`merge_data`</i>: Custom function to merge two datasets using pandas merge function. This function returns the merged results dataframe. Since one of the variables in the dataset was age and we wanted to be able to use a upper/lower bounds for the age, you will see a age limit parameter is passed into this function and is used to further subset the merged dataset to have only rows where age difference is within the specified limits.
+    * <i>`merge_data`</i>: Custom function to merge two datasets using pandas merge function. This function returns the merged results dataframe. Since one of the variables in the dataset was age and we wanted to be able to use a upper/lower bounds for the age, you will see a age limit parameter, passed into this function, is used to further subset the merged dataset to have only rows where age difference is within the specified limits.
     * <i>`fuzzywuzzy_match`</i>: Function using the fuzzywuzzy Python package to merge two dataframes.
 
 

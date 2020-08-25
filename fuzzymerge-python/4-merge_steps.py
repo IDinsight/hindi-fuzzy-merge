@@ -1,21 +1,22 @@
 #######################################################################################################
 
-# DESCRIPTION: Python file with customizable python code to match two datasets containing transliterated 
+# DESCRIPTION: Python file with customizable python code to match two datasets containing transliterated
 #              Hindi texts/names, age limits etc.
 
 # COMMAND TO RUN: python3 4-merge_steps.py
 
 # Python Packages Required: pandas, json, fuzzywuzzy, python-Levenshtein.
 
-# GENERAL NOTES: 
-# 		1. Prerequisites are: A Python environment with all the required python packages installed
-# 		2. Update the matching_config.json for file paths and variable names
-# 		3. Update the code to use the variables names and steps based on your dataset
+# GENERAL NOTES:
+#       1. Prerequisites are: A Python environment with all the required python packages installed
+#       2. Update the matching_config.json for file paths and variable names
+#       3. Update the code to use the variables names and steps based on your dataset
 
 ########################################################################################################
 
 exec(open('2-cleaning_functions.py').read())
 exec(open('3-merge_functions.py').read())
+
 
 def run():
 
@@ -33,12 +34,12 @@ def run():
     left_data_df = get_dataset(inputs_config, 'left')
     right_data_df = get_dataset(inputs_config, 'right')
 
-
     ################################################### Merges ###########################################################
 
     left_columns_to_keep = outputs_config["left_columns_to_keep"]
     right_columns_to_keep = outputs_config["right_columns_to_keep"]
-    columns_to_keep = ['left_' + str(col) for col in left_columns_to_keep] + ['right_' + str(col) for col in right_columns_to_keep]
+    columns_to_keep = ['left_' + str(col) for col in left_columns_to_keep] + [
+        'right_' + str(col) for col in right_columns_to_keep]
 
     # Add unique identifier from left dataset to beginning of the list, if not already included
     if 'left_dataset_unique_id' not in columns_to_keep:
@@ -48,8 +49,8 @@ def run():
     columns_to_keep.append('merge_desc')
 
     # Creating regions array for a for loop
-    # Note: This is specific to this dataset where we wanted to use the same 
-    #       combination of variables for merges at both region levels
+    # Note for users: This is specific to this dataset where we wanted to
+    #        use the same combination of variables for merges at both region levels
     regions = ['Village', 'Cluster']
     regions_columns = ['village_code', 'cluster_code']
 
@@ -59,281 +60,281 @@ def run():
     # Loop through regions
     for regions_index in range(0, len(regions)):
 
-        # Note: Change this or use multiple json arrays based on variables, reliability order etc. 
-        matching_steps_json =[
-        {
-        # 1 - Exact match on all variables at village level
-        "level_desc": regions[regions_index] + ", All 5 variables",
-        "left_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender', 'social_category', 'age'],
-        "right_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender', 'social_category', 'age'],
-        "age_limit": "0",
-        },
-        {
-        "level_desc":regions[regions_index] + ", All 5 variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt1', 'fathername_alt1', 'gender', 'social_category', 'age'],
-        "right_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender', 'social_category', 'age'],
-        "age_limit": "0",
-        },
-        # 2 - Exact match on full names, all variables except age, allow age ± 15  (Child name, father name, gender and caste, age ± 15)
-        {                             
-        "level_desc":regions[regions_index] + ", Age ± 15, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender', 'social_category'],
-        "age_limit": "15",
-        },  
-        {
-        "level_desc":regions[regions_index] + ", Age ± 15, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt1', 'fathername_alt1', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender', 'social_category'],
-        "age_limit": "15",
-        },
-        # 3 - Match without social category (Child name, father name, gender, age ± 3)
-        {
-        "level_desc":regions[regions_index] + ", Age ± 3, Other variables without SC",
-        "left_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender'],
-        "right_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender'],
-        "age_limit": "3",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 3, Other variables without SC",
-        "left_columns": [regions_columns[regions_index], 'childname_alt1', 'fathername_alt1', 'gender'],
-        "right_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender'],
-        "age_limit": "3",
-        },
-        # 4.1 - Exact match on first father names and all other variables
-        {
-        "level_desc": regions[regions_index] + ", First Father Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname1', 'fathername2', 'gender', 'social_category', 'age'],
-        "right_columns": [regions_columns[regions_index], 'childname1', 'fathername2', 'gender', 'social_category', 'age'],
-        "age_limit": "0",
-        },
-        {
-        "level_desc": regions[regions_index] + ", First Father Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt1', 'fathername_alt2', 'gender', 'social_category', 'age'],
-        "right_columns": [regions_columns[regions_index], 'childname1', 'fathername2', 'gender', 'social_category', 'age' ],
-        "age_limit": "0",
-        },
-        # 4.2 - Exact match on first child names and all other variables
-        {
-        "level_desc": regions[regions_index] + ", First Child Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname2', 'fathername1', 'gender', 'social_category', 'age'],
-        "right_columns": [regions_columns[regions_index], 'childname2', 'fathername1', 'gender', 'social_category', 'age'],
-        "age_limit": "0",
-        },
-        {
-        "level_desc": regions[regions_index] + ", First Child Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt2', 'fathername_alt1', 'gender', 'social_category', 'age'],
-        "right_columns": [regions_columns[regions_index], 'childname2', 'fathername1', 'gender', 'social_category', 'age'],
-        "age_limit": "0",
-        },
-        # 4.3 - Exact match on first names and all other variables
-        {
-        "level_desc": regions[regions_index] + ", First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname2', 'fathername2', 'gender', 'social_category', 'age'],
-        "right_columns": [regions_columns[regions_index], 'childname2', 'fathername2', 'gender', 'social_category', 'age'],
-        "age_limit": "0",
-        },
-        {
-        "level_desc":regions[regions_index] + ", First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt2', 'fathername_alt2', 'gender', 'social_category', 'age'],
-        "right_columns": [regions_columns[regions_index], 'childname2', 'fathername2', 'gender', 'social_category', 'age'],
-        "age_limit": "0",
-        },
-        # 5.1 - Exact match on first father names, all other variables except age, allow age ± 2
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, First Father Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname1', 'fathername2', 'gender', 'social_category'],
-        "right_columns":[regions_columns[regions_index], 'childname1', 'fathername2', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, First Father Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt1', 'fathername_alt2', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname1', 'fathername2', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        # 5.2 - Exact match on first child names, all other variables except age, allow age ± 2 
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, First Child Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname2', 'fathername1', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname2', 'fathername1', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, First Child Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt2', 'fathername_alt1', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname2', 'fathername1', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        # 5.3 - Exact match on first names, all other variables except age, allow age ± 2
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname2', 'fathername2', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname2', 'fathername2', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt2', 'fathername_alt2', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname2', 'fathername2', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-    	# 6.1 - Exact match on full father name with level 1 transliteration fixes, all other variables except age, allow age ± 2 (Child name, father name level 1, gender and caste, age ± 2)
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 Father names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname1', 'fathername3', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname1', 'fathername3', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 Father names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt1', 'fathername_alt3', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname1', 'fathername3', 'gender', 'social_category'],
-        "age_limit": "2",
-        },   
-    	# 6.2 - Exact match on full child names with level 1 transliteration fixes, all other variables except age, allow age ± 2 (Child name level 1, father name, gender and caste, age ± 2)
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 Child Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname3', 'fathername1', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname3', 'fathername1', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 Child Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt3', 'fathername_alt1', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname3', 'fathername1', 'gender', 'social_category'],
-        "age_limit": "2",
-        },  
-    	# 6.3 - Exact match on full names with level 1 transliteration fixes, all other variables except age, allow age ± 2 (Child name level 1, father name level 1, gender and caste, age ± 2)
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname3', 'fathername3', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname3', 'fathername3', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt3', 'fathername_alt3', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname3', 'fathername3', 'gender', 'social_category'],
-        "age_limit": "2",
-        },    
-    	# 7.1 - Exact match on first names with level 1 transliteration fixes, all other variables except age, allow age ± 2 (Child first name, father first name level 1, gender and caste, age ± 2)
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 Father First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname2', 'fathername4', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname4', 'fathername4', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 Father First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt2', 'fathername_alt4', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname2', 'fathername4', 'gender', 'social_category'],
-        "age_limit": "2",
-        }, 
-    	# 7.2 - Exact match on first names with level 1 transliteration fixes, all other variables except age, allow age ± 2 (Child first name level 1, father first name, gender and caste, age ± 2)
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 Child First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname4', 'fathername2', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname4', 'fathername2', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 Child First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt4', 'fathername_alt2', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname4', 'fathername2', 'gender', 'social_category'],
-        "age_limit": "2",
-        }, 
-    	# 7.3 - Exact match on first names with level 2 transliteration fixes, all other variables except age, allow age ± 2 (Child first name level 1, father first name level 1, gender and caste, age ± 2)
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname4', 'fathername4', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname4', 'fathername4', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt4', 'fathername_alt4', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname4', 'fathername4', 'gender', 'social_category'],
-        "age_limit": "2",
-        },  
-    	# 8.1 - Exact match on full names with level 1 + 2 transliteration fixes, all other variables except age, allow age ± 2 (Child name, father name level 2, gender and caste, age ± 2)
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 & 2 Father Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname1', 'fathername5', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname1', 'fathername5', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 & 2 Father Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt1', 'fathername_alt5', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname1', 'fathername5', 'gender', 'social_category'],
-        "age_limit": "2",
-        }, 
-        # 8.2 - Exact match on full names with level 1 + 2 transliteration fixes, all other variables except age, allow age ± 2 (Child name level 2, father name, gender and caste, age ± 2)
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 & 2 Child Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname5', 'fathername1', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname5', 'fathername1', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 & 2 Child Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt5', 'fathername_alt1', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname5', 'fathername1', 'gender', 'social_category'],
-        "age_limit": "2",
-        },   
-        # 8.3 - Exact match on full names with level 1 + 2 transliteration fixes, all other variables except age, allow age ± 2 (Child name level 2, father name level 2, gender and caste, age ± 2)
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 & 2 Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname5', 'fathername5', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname5', 'fathername5', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 & 2 Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt5', 'fathername_alt5', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname5', 'fathername5', 'gender', 'social_category'],
-        "age_limit": "2",
-        },     
-        # 9.1 - Exact match on first names with level 1 + 2 transliteration fixes, all other variables except age, allow age ± 2 (Child first name, father first name level 2, gender and caste, age ± 2)
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 & 2 Father First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname2', 'fathername6', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname2', 'fathername6', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 & 2 Father First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt2', 'fathername_alt6', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname2', 'fathername6', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        # 9.2 - Exact match on first names with level 1 + 2 transliteration fixes, all other variables except age, allow age ± 2 (Child first name level 2, father first name, gender and caste, age ± 2)
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 & 2 Child First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname6', 'fathername2', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname6', 'fathername2', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 & 2 Child First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt6', 'fathername_alt2', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname6', 'fathername2', 'gender', 'social_category'],
-        "age_limit": "2",
-        }, 
-    	# 9.3 - Exact match on first names with level 1 + 2 transliteration fixes, all other variables except age, allow age ± 2 (Child first name level 2, father first name level 2, gender and caste, age ± 2)
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 & 2 First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname6', 'fathername6', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname6', 'fathername6', 'gender', 'social_category'],
-        "age_limit": "2",
-        },
-        {
-        "level_desc":regions[regions_index] + ", Age ± 2, Level 1 & 2 First Names, Other variables",
-        "left_columns": [regions_columns[regions_index], 'childname_alt6', 'fathername_alt6', 'gender', 'social_category'],
-        "right_columns": [regions_columns[regions_index], 'childname6', 'fathername6', 'gender', 'social_category'],
-        "age_limit": "2",
-        }
+        # Note for users: Change this or use multiple json arrays based on variables, reliability order etc.
+        matching_steps_json = [
+            {
+                # 1 - Exact match on all variables at village level
+                "level_desc": regions[regions_index] + ", All 5 variables",
+                "left_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender', 'social_category', 'age'],
+                "right_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender', 'social_category', 'age'],
+                "age_limit": "0",
+            },
+            {
+                "level_desc": regions[regions_index] + ", All 5 variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt1', 'fathername_alt1', 'gender', 'social_category', 'age'],
+                "right_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender', 'social_category', 'age'],
+                "age_limit": "0",
+            },
+            # 2 - Exact match on full names, all variables except age, allow age ± 15  (Child name, father name, gender and caste, age ± 15)
+            {
+                "level_desc": regions[regions_index] + ", Age ± 15, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender', 'social_category'],
+                "age_limit": "15",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 15, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt1', 'fathername_alt1', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender', 'social_category'],
+                "age_limit": "15",
+            },
+            # 3 - Match without social category (Child name, father name, gender, age ± 3)
+            {
+                "level_desc": regions[regions_index] + ", Age ± 3, Other variables without SC",
+                "left_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender'],
+                "right_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender'],
+                "age_limit": "3",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 3, Other variables without SC",
+                "left_columns": [regions_columns[regions_index], 'childname_alt1', 'fathername_alt1', 'gender'],
+                "right_columns": [regions_columns[regions_index], 'childname1', 'fathername1', 'gender'],
+                "age_limit": "3",
+            },
+            # 4.1 - Exact match on first father names and all other variables
+            {
+                "level_desc": regions[regions_index] + ", First Father Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname1', 'fathername2', 'gender', 'social_category', 'age'],
+                "right_columns": [regions_columns[regions_index], 'childname1', 'fathername2', 'gender', 'social_category', 'age'],
+                "age_limit": "0",
+            },
+            {
+                "level_desc": regions[regions_index] + ", First Father Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt1', 'fathername_alt2', 'gender', 'social_category', 'age'],
+                "right_columns": [regions_columns[regions_index], 'childname1', 'fathername2', 'gender', 'social_category', 'age'],
+                "age_limit": "0",
+            },
+            # 4.2 - Exact match on first child names and all other variables
+            {
+                "level_desc": regions[regions_index] + ", First Child Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname2', 'fathername1', 'gender', 'social_category', 'age'],
+                "right_columns": [regions_columns[regions_index], 'childname2', 'fathername1', 'gender', 'social_category', 'age'],
+                "age_limit": "0",
+            },
+            {
+                "level_desc": regions[regions_index] + ", First Child Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt2', 'fathername_alt1', 'gender', 'social_category', 'age'],
+                "right_columns": [regions_columns[regions_index], 'childname2', 'fathername1', 'gender', 'social_category', 'age'],
+                "age_limit": "0",
+            },
+            # 4.3 - Exact match on first names and all other variables
+            {
+                "level_desc": regions[regions_index] + ", First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname2', 'fathername2', 'gender', 'social_category', 'age'],
+                "right_columns": [regions_columns[regions_index], 'childname2', 'fathername2', 'gender', 'social_category', 'age'],
+                "age_limit": "0",
+            },
+            {
+                "level_desc": regions[regions_index] + ", First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt2', 'fathername_alt2', 'gender', 'social_category', 'age'],
+                "right_columns": [regions_columns[regions_index], 'childname2', 'fathername2', 'gender', 'social_category', 'age'],
+                "age_limit": "0",
+            },
+            # 5.1 - Exact match on first father names, all other variables except age, allow age ± 2
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, First Father Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname1', 'fathername2', 'gender', 'social_category'],
+                "right_columns":[regions_columns[regions_index], 'childname1', 'fathername2', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, First Father Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt1', 'fathername_alt2', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname1', 'fathername2', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            # 5.2 - Exact match on first child names, all other variables except age, allow age ± 2
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, First Child Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname2', 'fathername1', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname2', 'fathername1', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, First Child Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt2', 'fathername_alt1', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname2', 'fathername1', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            # 5.3 - Exact match on first names, all other variables except age, allow age ± 2
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname2', 'fathername2', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname2', 'fathername2', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt2', 'fathername_alt2', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname2', 'fathername2', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            # 6.1 - Exact match on full father name with level 1 transliteration fixes, all other variables except age, allow age ± 2 (Child name, father name level 1, gender and caste, age ± 2)
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 Father names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname1', 'fathername3', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname1', 'fathername3', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 Father names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt1', 'fathername_alt3', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname1', 'fathername3', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            # 6.2 - Exact match on full child names with level 1 transliteration fixes, all other variables except age, allow age ± 2 (Child name level 1, father name, gender and caste, age ± 2)
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 Child Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname3', 'fathername1', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname3', 'fathername1', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 Child Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt3', 'fathername_alt1', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname3', 'fathername1', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            # 6.3 - Exact match on full names with level 1 transliteration fixes, all other variables except age, allow age ± 2 (Child name level 1, father name level 1, gender and caste, age ± 2)
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname3', 'fathername3', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname3', 'fathername3', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt3', 'fathername_alt3', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname3', 'fathername3', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            # 7.1 - Exact match on first names with level 1 transliteration fixes, all other variables except age, allow age ± 2 (Child first name, father first name level 1, gender and caste, age ± 2)
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 Father First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname2', 'fathername4', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname4', 'fathername4', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 Father First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt2', 'fathername_alt4', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname2', 'fathername4', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            # 7.2 - Exact match on first names with level 1 transliteration fixes, all other variables except age, allow age ± 2 (Child first name level 1, father first name, gender and caste, age ± 2)
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 Child First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname4', 'fathername2', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname4', 'fathername2', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 Child First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt4', 'fathername_alt2', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname4', 'fathername2', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            # 7.3 - Exact match on first names with level 2 transliteration fixes, all other variables except age, allow age ± 2 (Child first name level 1, father first name level 1, gender and caste, age ± 2)
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname4', 'fathername4', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname4', 'fathername4', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt4', 'fathername_alt4', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname4', 'fathername4', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            # 8.1 - Exact match on full names with level 1 + 2 transliteration fixes, all other variables except age, allow age ± 2 (Child name, father name level 2, gender and caste, age ± 2)
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 & 2 Father Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname1', 'fathername5', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname1', 'fathername5', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 & 2 Father Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt1', 'fathername_alt5', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname1', 'fathername5', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            # 8.2 - Exact match on full names with level 1 + 2 transliteration fixes, all other variables except age, allow age ± 2 (Child name level 2, father name, gender and caste, age ± 2)
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 & 2 Child Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname5', 'fathername1', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname5', 'fathername1', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 & 2 Child Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt5', 'fathername_alt1', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname5', 'fathername1', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            # 8.3 - Exact match on full names with level 1 + 2 transliteration fixes, all other variables except age, allow age ± 2 (Child name level 2, father name level 2, gender and caste, age ± 2)
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 & 2 Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname5', 'fathername5', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname5', 'fathername5', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 & 2 Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt5', 'fathername_alt5', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname5', 'fathername5', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            # 9.1 - Exact match on first names with level 1 + 2 transliteration fixes, all other variables except age, allow age ± 2 (Child first name, father first name level 2, gender and caste, age ± 2)
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 & 2 Father First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname2', 'fathername6', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname2', 'fathername6', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 & 2 Father First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt2', 'fathername_alt6', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname2', 'fathername6', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            # 9.2 - Exact match on first names with level 1 + 2 transliteration fixes, all other variables except age, allow age ± 2 (Child first name level 2, father first name, gender and caste, age ± 2)
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 & 2 Child First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname6', 'fathername2', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname6', 'fathername2', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 & 2 Child First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt6', 'fathername_alt2', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname6', 'fathername2', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            # 9.3 - Exact match on first names with level 1 + 2 transliteration fixes, all other variables except age, allow age ± 2 (Child first name level 2, father first name level 2, gender and caste, age ± 2)
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 & 2 First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname6', 'fathername6', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname6', 'fathername6', 'gender', 'social_category'],
+                "age_limit": "2",
+            },
+            {
+                "level_desc": regions[regions_index] + ", Age ± 2, Level 1 & 2 First Names, Other variables",
+                "left_columns": [regions_columns[regions_index], 'childname_alt6', 'fathername_alt6', 'gender', 'social_category'],
+                "right_columns": [regions_columns[regions_index], 'childname6', 'fathername6', 'gender', 'social_category'],
+                "age_limit": "2",
+            }
         ]
 
         # Loop through matching config json and perform merge
@@ -348,17 +349,18 @@ def run():
                                                match_step["age_limit"]
                                                )
 
-    		# remove matched rows from left dataset
-            left_data_df = left_data_df[~left_data_df['left_dataset_unique_id'].isin(match_step_results_df['left_dataset_unique_id'])]
-            
+            # remove matched rows from left dataset
+            left_data_df = left_data_df[~left_data_df['left_dataset_unique_id'].isin(
+                match_step_results_df['left_dataset_unique_id'])]
+
             match_step_results_df = match_step_results_df[columns_to_keep]
-            results_final_df = pd.concat([results_final_df, match_step_results_df], ignore_index=True, sort=True)
-            
+            results_final_df = pd.concat(
+                [results_final_df, match_step_results_df], ignore_index=True, sort=True)
+
             print("Matched dataset is :" + str(results_final_df.shape))
             print("Remaining left dataset is :" + str(left_data_df.shape))
 
             step_counter = step_counter + 1
-
 
     # ############################################# Fuzzy Wuzzy Ratio Merge ################################################
 
@@ -367,47 +369,53 @@ def run():
     merge_desc = "Exact fathername6, child names merged using fuzzy wuzzy ratio, Age+5"
     print(str(merge_level) + " - " + merge_desc)
 
-    left_data_df['left_merge_column_concat'] = left_data_df['left_village_code'] + left_data_df['left_fathername6'] + left_data_df['left_gender']
-    right_data_df['right_merge_column_concat'] = right_data_df['right_village_code'] + right_data_df['right_fathername6'] +  right_data_df['right_gender']
+    left_data_df['left_merge_column_concat'] = left_data_df['left_village_code'] + \
+        left_data_df['left_fathername6'] + left_data_df['left_gender']
+    right_data_df['right_merge_column_concat'] = right_data_df['right_village_code'] + \
+        right_data_df['right_fathername6'] + right_data_df['right_gender']
 
+    left_data_df['childname1_match'] = left_data_df.apply(fuzzywuzzy_match,
+                                                          args=('left_childname1', 'right_childname1',
+                                                                'left_merge_column_concat', 'right_merge_column_concat',
+                                                                right_data_df, fuzz.ratio, 90),
+                                                          axis=1)
 
-    left_data_df['childname1_match'] = left_data_df.apply(fuzzywuzzy_match, 
-                                                    args=('left_childname1', 'right_childname1', 
-                                                          'left_merge_column_concat', 'right_merge_column_concat',
-                                                          right_data_df, fuzz.ratio, 90), 
-                                                    axis=1)
-                                         
-
-    fuzzywuzzy_results_df = pd.merge(left_data_df, right_data_df, 
-                                     left_on=['childname1_match', 'left_village_code', 'left_fathername6', 'left_gender'],
-                                     right_on=['right_childname1', 'right_village_code', 'right_fathername6', 'right_gender'],
+    fuzzywuzzy_results_df = pd.merge(left_data_df, right_data_df,
+                                     left_on=[
+                                         'childname1_match', 'left_village_code', 'left_fathername6', 'left_gender'],
+                                     right_on=[
+                                         'right_childname1', 'right_village_code', 'right_fathername6', 'right_gender'],
                                      how='inner', indicator=True, suffixes=['', '_y'])
 
     fuzzywuzzy_results_df['right_age_low'] = fuzzywuzzy_results_df['right_age'] - 5
     fuzzywuzzy_results_df['right_age_high'] = fuzzywuzzy_results_df['right_age'] + 5
-    fuzzywuzzy_results_df = fuzzywuzzy_results_df[fuzzywuzzy_results_df.left_age.between(fuzzywuzzy_results_df.right_age_low, fuzzywuzzy_results_df.right_age_high)]
+    fuzzywuzzy_results_df = fuzzywuzzy_results_df[fuzzywuzzy_results_df.left_age.between(
+        fuzzywuzzy_results_df.right_age_low, fuzzywuzzy_results_df.right_age_high)]
 
     # Keep rows for each unique id for which the age is closest in the 2 datasets
-    fuzzywuzzy_results_df['age_diff'] = abs(fuzzywuzzy_results_df['right_age'] - fuzzywuzzy_results_df['left_age'])
-    fuzzywuzzy_results_df = fuzzywuzzy_results_df[fuzzywuzzy_results_df['age_diff'] == fuzzywuzzy_results_df.groupby('left_dataset_unique_id')['age_diff'].transform('min')]
+    fuzzywuzzy_results_df['age_diff'] = abs(
+        fuzzywuzzy_results_df['right_age'] - fuzzywuzzy_results_df['left_age'])
+    fuzzywuzzy_results_df = fuzzywuzzy_results_df[fuzzywuzzy_results_df['age_diff'] == fuzzywuzzy_results_df.groupby(
+        'left_dataset_unique_id')['age_diff'].transform('min')]
 
     fuzzywuzzy_results_df['merge_level'] = merge_level
     fuzzywuzzy_results_df['merge_desc'] = merge_desc
 
     # remove matched rows from left dataset
-    left_data_df = left_data_df[~left_data_df['left_dataset_unique_id'].isin(fuzzywuzzy_results_df['left_dataset_unique_id'])]
-    
+    left_data_df = left_data_df[~left_data_df['left_dataset_unique_id'].isin(
+        fuzzywuzzy_results_df['left_dataset_unique_id'])]
+
     fuzzywuzzy_results_df = fuzzywuzzy_results_df[columns_to_keep]
-    results_final_df = pd.concat([results_final_df, fuzzywuzzy_results_df], ignore_index=True, sort=True)
-    
+    results_final_df = pd.concat(
+        [results_final_df, fuzzywuzzy_results_df], ignore_index=True, sort=True)
+
     print("Matched dataset is :" + str(results_final_df.shape))
     print("Remaining left dataset is :" + str(left_data_df.shape))
 
     step_counter = step_counter + 1
 
-    
     # ############################################### Lev + Soundex ##################################################
-    # Combining lev (masala merge code) with soundex because first merging by soundex allows bringing down the 
+    # Combining lev (masala merge code) with soundex because first merging by soundex allows bringing down the
     # number of rows to calculated edit distance for
 
     # print("*******************************************************************")
@@ -416,7 +424,7 @@ def run():
     # print(str(merge_level) + " - " + merge_desc)
 
     # # 26 - Levenshtein merges
-    # lev_results_df = pd.merge(left_data_df, right_data_df, 
+    # lev_results_df = pd.merge(left_data_df, right_data_df,
     #                   left_on=['left_village_code', 'left_gender', 'left_social_category', 'left_fathername1_soundex'],
     #                   right_on=['right_village_code', 'right_gender', 'right_social_category', 'right_fathername1_soundex'],
     #                   how='inner', indicator=True, suffixes=['', '_y'])
@@ -436,13 +444,13 @@ def run():
     #     v_result_threshhold_lev['age_diff'] = abs(v_result_threshhold_lev['right_age'] - v_result_threshhold_lev['left_age'])
     #     v_result_threshhold_lev = v_result_threshhold_lev[v_result_threshhold_lev['age_diff'] == v_result_threshhold_lev.groupby('left_dataset_unique_id')['age_diff'].transform('min')]
 
-    #     v_result_threshhold_lev = v_result_threshhold_lev[columns_to_keep]    
+    #     v_result_threshhold_lev = v_result_threshhold_lev[columns_to_keep]
     #     v_result_threshhold_lev['merge_level'] = merge_level
     #     v_result_threshhold_lev['merge_desc'] = merge_desc
 
     #     # remove matched rows from left dataset
     #     left_data_df = left_data_df[~left_data_df['left_dataset_unique_id'].isin(v_result_threshhold_lev['left_dataset_unique_id'])]
-        
+
     #     fuzzywuzzy_results_df = fuzzywuzzy_results_df[columns_to_keep]
     #     results_final_df = pd.concat([results_final_df, fuzzywuzzy_results_df], ignore_index=True, sort=True)
 
@@ -451,53 +459,57 @@ def run():
 
     # step_counter = step_counter + 1
 
-
     # ############################################# Fuzzy Wuzzy Partial Ratio ################################################
-  
+
     print("*******************************************************************")
     merge_level = step_counter
     merge_desc = "Exact fathername6, child names merged using fuzzy wuzzy partial ratio, Age+5"
     print(str(merge_level) + " - " + merge_desc)
 
-    left_data_df['left_merge_column_concat'] = left_data_df['left_village_code'] + left_data_df['left_fathername6'] + left_data_df['left_gender']
-    right_data_df['right_merge_column_concat'] = right_data_df['right_village_code'] + right_data_df['right_fathername6'] +  right_data_df['right_gender']
+    left_data_df['left_merge_column_concat'] = left_data_df['left_village_code'] + \
+        left_data_df['left_fathername6'] + left_data_df['left_gender']
+    right_data_df['right_merge_column_concat'] = right_data_df['right_village_code'] + \
+        right_data_df['right_fathername6'] + right_data_df['right_gender']
 
+    left_data_df['childname1_match'] = left_data_df.apply(fuzzywuzzy_match,
+                                                          args=('left_childname1', 'right_childname1',
+                                                                'left_merge_column_concat', 'right_merge_column_concat',
+                                                                right_data_df, fuzz.partial_ratio, 90),
+                                                          axis=1)
 
-
-    left_data_df['childname1_match'] = left_data_df.apply(fuzzywuzzy_match, 
-                                                    args=('left_childname1', 'right_childname1', 
-                                                          'left_merge_column_concat', 'right_merge_column_concat',
-                                                          right_data_df, fuzz.partial_ratio, 90), 
-                                                    axis=1)
-                                         
-
-    fuzzywuzzy_results_df = pd.merge(left_data_df, right_data_df, 
-                                     left_on=['childname1_match', 'left_village_code', 'left_fathername6', 'left_gender'],
-                                     right_on=['right_childname1', 'right_village_code', 'right_fathername6', 'right_gender'],
+    fuzzywuzzy_results_df = pd.merge(left_data_df, right_data_df,
+                                     left_on=[
+                                         'childname1_match', 'left_village_code', 'left_fathername6', 'left_gender'],
+                                     right_on=[
+                                         'right_childname1', 'right_village_code', 'right_fathername6', 'right_gender'],
                                      how='inner', indicator=True, suffixes=['', '_y'])
 
     fuzzywuzzy_results_df['right_age_low'] = fuzzywuzzy_results_df['right_age'] - 5
     fuzzywuzzy_results_df['right_age_high'] = fuzzywuzzy_results_df['right_age'] + 5
-    fuzzywuzzy_results_df = fuzzywuzzy_results_df[fuzzywuzzy_results_df.left_age.between(fuzzywuzzy_results_df.right_age_low, fuzzywuzzy_results_df.right_age_high)]
+    fuzzywuzzy_results_df = fuzzywuzzy_results_df[fuzzywuzzy_results_df.left_age.between(
+        fuzzywuzzy_results_df.right_age_low, fuzzywuzzy_results_df.right_age_high)]
 
     # Keep rows for each unique id for which the age is closest in the 2 datasets
-    fuzzywuzzy_results_df['age_diff'] = abs(fuzzywuzzy_results_df['right_age'] - fuzzywuzzy_results_df['left_age'])
-    fuzzywuzzy_results_df = fuzzywuzzy_results_df[fuzzywuzzy_results_df['age_diff'] == fuzzywuzzy_results_df.groupby('left_dataset_unique_id')['age_diff'].transform('min')]
+    fuzzywuzzy_results_df['age_diff'] = abs(
+        fuzzywuzzy_results_df['right_age'] - fuzzywuzzy_results_df['left_age'])
+    fuzzywuzzy_results_df = fuzzywuzzy_results_df[fuzzywuzzy_results_df['age_diff'] == fuzzywuzzy_results_df.groupby(
+        'left_dataset_unique_id')['age_diff'].transform('min')]
 
     fuzzywuzzy_results_df['merge_level'] = merge_level
     fuzzywuzzy_results_df['merge_desc'] = merge_desc
 
     # remove matched rows from left dataset
-    left_data_df = left_data_df[~left_data_df['left_dataset_unique_id'].isin(fuzzywuzzy_results_df['left_dataset_unique_id'])]
-    
+    left_data_df = left_data_df[~left_data_df['left_dataset_unique_id'].isin(
+        fuzzywuzzy_results_df['left_dataset_unique_id'])]
+
     fuzzywuzzy_results_df = fuzzywuzzy_results_df[columns_to_keep]
-    results_final_df = pd.concat([results_final_df, fuzzywuzzy_results_df], ignore_index=True, sort=True)
-    
+    results_final_df = pd.concat(
+        [results_final_df, fuzzywuzzy_results_df], ignore_index=True, sort=True)
+
     print("Matched dataset is :" + str(results_final_df.shape))
     print("Remaining left dataset is :" + str(left_data_df.shape))
 
     step_counter = step_counter + 1
-
 
     #########################################################################################################
     ############################################### Output ##################################################
@@ -518,5 +530,3 @@ def run():
 if __name__ == '__main__':
 
     run()
-    
-

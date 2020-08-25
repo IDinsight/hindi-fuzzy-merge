@@ -12,9 +12,8 @@ Stata code for merging two datasets containing columns with Hindi transliterated
 <a name="overview"></a>
 ## Overview
 
-This code was developed to match names in a household census with entries voter rolls for the corresponding areas in four Hindi-speaking states in northern India. It is intended as an example of how to fuzzy match datasets with Hindi transliterated names. Other use cases will require changes to this code, including updates to the list of transliteration standardizations and to the list of other variables that are used to make matches.
-
-This code is motivated by the fact that Hindi names written in Devanagari script are not transliterated in a consistent way to Latin script. Although fuzzy matching programs exist, most are optimized for text originally written in Latin script, and so they perform poorly when applied to Hindi transliterated names. We also found that match rates could be improved substantially by taking a stepwise approach, starting with the most certain matches and progressively loosening restrictions. False matches in fuzzy matching algorithms propagate: an early false match that incorrectly removes an individual from the match pool leads the algorithm to make false matches with other individuals in later steps. By completing more certain matches before moving onto less certain matches, we found that our stepwise algorithm (comprised of 125 sequential merges) reduced false match rates more than running a fuzzy match program a single time.
+This code was developed to match names in a household census with entries voter rolls for the corresponding areas in four Hindi-speaking states in northern India. 
+It is intended as an example of how to fuzzy match datasets with Hindi transliterated names. Other use cases will require changes to this code, including updates to the list of transliteration standardizations and to the list of other variables that are used to make matches.
 
 
 <a name="directory"></a>

@@ -1,6 +1,6 @@
 # transliteration
 
-In one of our applications of fuzzy matching, the data was available to us only in Devnagari script and we had to first transliterate it to English using Polyglot– a Python library that supports transliteration. 
+In one of our applications of fuzzy matching, the data was available to us only in Devnagari script and we had to first transliterate it to English using Polyglot - a Python library that supports transliteration. 
 
 Before transliterating through Polyglot, we modified the algorithm to ensure greater consistency in tranlisterations and hence, better matching rates. 
 
