@@ -8,7 +8,7 @@ This algorithm is motivated by the fact that Hindi names written in Devanagari s
 
 We also found that match rates could be improved substantially by taking a stepwise approach, starting with the most certain matches and progressively loosening restrictions. False matches in fuzzy matching algorithms propagate: an early false match that incorrectly removes an individual from the match pool leads the algorithm to make false matches with other individuals in later steps. 
 
-By completing more certain matches before moving onto less certain matches, we found that our stepwise algorithm (comprised of 125 sequential merges) reduced false match rates more than running a fuzzy match program a single time.
+By completing more certain matches before moving onto less certain matches, we found that our stepwise algorithm reduced false match rates more than running a fuzzy match program a single time.
 
 
 ## Directory Structure

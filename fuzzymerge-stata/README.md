@@ -12,7 +12,7 @@ Stata code for merging two datasets containing columns with Hindi transliterated
 <a name="overview"></a>
 ## Overview
 
-This code was developed to match names in a household census with entries voter rolls for the corresponding areas in four Hindi-speaking states in northern India. 
+This code was developed to match names in a household census with entries voter rolls for the corresponding areas in four Hindi-speaking states in northern India using 125 sequential merges. 
 It is intended as an example of how to fuzzy match datasets with Hindi transliterated names. Other use cases will require changes to this code, including updates to the list of transliteration standardizations and to the list of other variables that are used to make matches.
 
 
